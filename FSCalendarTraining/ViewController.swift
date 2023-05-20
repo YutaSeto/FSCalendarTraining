@@ -7,8 +7,15 @@
 
 import UIKit
 import FSCalendar
+import SwiftMoment
+import CalculateCalendarLogic
 
 class ViewController: UIViewController {
+    
+    let holiday = CalculateCalendarLogic()
+    var holidayArray:[Date] = []
+    var startOfMonth: Moment = moment()
+    var endOfMonth: Moment = moment()
 
     @IBOutlet weak var calendarView: FSCalendar!
     
@@ -20,9 +27,40 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setstartOfMonthAndendOfMoth()
         calendarView.dataSource = self
         calendarView.delegate = self
         calendarView.collectionView.register(UINib(nibName: "FSCalendarCustomCell", bundle: nil),forCellWithReuseIdentifier: "FSCalendarCustomCell")
+    }
+    
+    func judgementHoliday(date:Date){
+        let intYear = moment(date).year
+        let intMonth = moment(date).month
+        let intDay = moment(date).day
+        func judgeHoliday(year:Int,month:Int,day:Int){
+            let result = holiday.judgeJapaneseHoliday(year: year, month: month, day: day)
+            if result == true{
+                let date = Calendar.current.date(from: DateComponents(year: intYear, month: intMonth, day: intDay))
+                if let date = date {
+                    holidayArray.append(date)
+                }
+            }
+        }
+        judgeHoliday(year: intYear, month: intMonth, day: intDay)
+    }
+    
+    func setstartOfMonthAndendOfMoth(){
+        //今月の1日を取得
+        let calendar = Calendar.current
+        let year = moment(Date()).year
+        let month = moment(Date()).month
+        let firstDay = calendar.date(from:DateComponents(year: year,month:month,day: 1))!
+        startOfMonth = moment(firstDay)
+        
+        //翌月の1日を取得
+        let endDay = calendar.date(byAdding: DateComponents(month: 1), to: firstDay)!
+        endOfMonth = moment(endDay)
+        print(endOfMonth)
     }
 }
 
@@ -59,12 +97,23 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
     func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
         let cell = calendar.dequeueReusableCell(withIdentifier: "FSCalendarCustomCell", for: date, at: position) as! FSCalendarCustomCell
         cell.dayLabel.text = onliDayDateFormatter.string(from: date)
-        return cell
-    }
-    
-    func calendar(_ calendar: FSCalendar, cellForColor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
-        let cell = calendar.dequeueReusableCell(withIdentifier: "FSCalendarCustomCell", for: date, at: position) as! FSCalendarCustomCell
         
+        judgementHoliday(date: moment(date).date)
+        
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: date)
+        
+        if moment(date) < startOfMonth || moment(date) > endOfMonth{//今月以外
+            cell.dayLabel.textColor = UIColor.gray
+        }else if holidayArray.contains(moment(date).date){//祝日を赤
+            cell.dayLabel.textColor = .red
+        }else if weekday == 7{//土曜日を青
+            cell.dayLabel.textColor = UIColor.blue
+        }else if weekday == 1{//日曜日を赤
+            cell.dayLabel.textColor = UIColor.red
+        }else{//上記以外の日を黒
+            cell.dayLabel.textColor = UIColor.black
+        }
         return cell
     }
     
@@ -83,5 +132,4 @@ extension ViewController:FSCalendarDataSource,FSCalendarDelegate,FSCalendarDeleg
             cell.select()
         }
     }
-    
 }

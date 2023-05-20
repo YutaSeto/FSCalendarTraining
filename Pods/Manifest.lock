@@ -1,16 +1,24 @@
 PODS:
+  - CalculateCalendarLogic (0.6.1)
   - FSCalendar (2.8.4)
+  - SwiftMoment (0.7)
 
 DEPENDENCIES:
+  - CalculateCalendarLogic
   - FSCalendar
+  - SwiftMoment
 
 SPEC REPOS:
   trunk:
+    - CalculateCalendarLogic
     - FSCalendar
+    - SwiftMoment
 
 SPEC CHECKSUMS:
+  CalculateCalendarLogic: e4f7c7fe17f68b1d30fb51560acc634b4629a622
   FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
+  SwiftMoment: dc6dd27012e267819104cbb03f74ff9192dd0b42
 
-PODFILE CHECKSUM: 060a24bff96ce0ff2b73e8006c9be7d40ac7b1c2
+PODFILE CHECKSUM: 2ff0400bd6fc696f9f156ab8a0340ed64508ef8c
 
 COCOAPODS: 1.12.1

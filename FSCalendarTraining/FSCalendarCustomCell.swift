@@ -18,6 +18,7 @@ class FSCalendarCustomCell: FSCalendarCell {
         // Initialization code
         self.layer.borderWidth = 1.0
         self.layer.borderColor = UIColor.lightGray.cgColor
+        dayLabel.font = UIFont(name: "system", size: 20)
     }
     
     func select(){
